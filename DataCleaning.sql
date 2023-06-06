@@ -16,3 +16,54 @@ UPDATE NashvilleHousing
 SET SaleDateConverted = Convert(Date, SaleDate)
 
 
+-- Populate Property Address Data
+
+SELECT *
+FROM PortfolioProjectDataCleaning..NashvilleHousing 
+Where PropertyAddress is NULL
+
+SELECT *
+From NashvilleHousing 
+ORDER by ParcelID
+
+SELECT a.ParcelID, a.PropertyAddress, b.ParcelID, b.PropertyAddress, ISNULL(a.PropertyAddress,b.PropertyAddress)
+From NashvilleHousing a   
+JOIN NashvilleHousing b 
+    on a.ParcelID = b.ParcelID
+    AND a.[UniqueID] <> b.[UniqueID]
+WHERE a.PropertyAddress is NULL
+
+
+UPDATE a 
+Set PropertyAddress = ISNULL(a.PropertyAddress,b.PropertyAddress)
+From NashvilleHousing a   
+JOIN NashvilleHousing b 
+    on a.ParcelID = b.ParcelID
+    AND a.[UniqueID] <> b.[UniqueID] 
+Where a.PropertyAddress is NULL
+
+
+-- Breaking out address into individual columns
+
+SELECT PropertyAddress
+From NashvilleHousing  
+ORDER by ParcelID
+
+Select 
+SUBSTRING(PropertyAddress, 1, CHARINDEX(',', PropertyAddress)) AS Address
+, SUBSTRING(PropertyAddress, CHARINDEX(',', PropertyAddress) +1, LEN(PropertyAddress)) AS Address
+From NashvilleHousing 
+
+Alter TABLE NashvilleHousing
+Add PropertySplitAddress NVARCHAR(255)
+UPDATE NashvilleHousing
+SET PropertySplitAddress = SUBSTRING(PropertyAddress, 1, CHARINDEX(',', PropertyAddress)-1) 
+Alter TABLE NashvilleHousing
+Add PropertySplitCity NVARCHAR(255)
+UPDATE NashvilleHousing   
+Set PropertySplitCity = SUBSTRING(PropertyAddress, CHARINDEX(',', PropertyAddress) +1, LEN(PropertyAddress)) 
+
+
+Select OwnerAddress
+From NashvilleHousing 
+
