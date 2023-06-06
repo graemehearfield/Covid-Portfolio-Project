@@ -90,3 +90,47 @@ Set OwnerSplitState = PARSENAME(Replace(OwnerAddress,',','.'),1)
 
 SELECT *
 From NashvilleHousing  
+
+
+-- Change Y and N to Yes to No in sold as vacant
+
+SELECT Distinct(SoldAsVacant),Count(SoldAsVacant)
+From NashvilleHousing
+Group By SoldAsVacant
+Order by 2
+
+Select SoldAsVacant
+, CASE When SoldAsVacant = 'Y' THEN 'Yes'
+        When SoldAsVacant = 'N' Then 'No'
+        ELSE SoldAsVacant
+        END
+From NashvilleHousing 
+
+UPDATE NashvilleHousing
+Set SoldAsVacant = CASE When SoldAsVacant = 'Y' THEN 'Yes'
+        When SoldAsVacant = 'N' Then 'No'
+        ELSE SoldAsVacant
+        END
+From NashvilleHousing
+
+
+
+-- Remove Duplicates
+
+WITH RowNumCTE AS(
+SELECT *,
+    ROW_NUMBER() Over(
+        PARTITION BY ParcelID,
+                    PropertyAddress,
+                    SalePrice,
+                    SaleDate,
+                    LegalReference
+                    Order by UniqueID
+    ) row_num
+From NashvilleHousing
+--Order by ParcelID
+)
+-- Delete  
+From RowNumCTE
+Where row_num > 1
+Order by ParcelID
