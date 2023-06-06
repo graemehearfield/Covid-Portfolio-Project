@@ -134,3 +134,13 @@ From NashvilleHousing
 From RowNumCTE
 Where row_num > 1
 Order by ParcelID
+
+
+--Delete unused columns
+
+Select *
+From NashvilleHousing
+
+
+Alter Table NashvilleHousing
+Drop COLUMN OwnerAddress, TaxDistrict, PropertyAddress
