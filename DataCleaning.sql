@@ -67,3 +67,26 @@ Set PropertySplitCity = SUBSTRING(PropertyAddress, CHARINDEX(',', PropertyAddres
 Select OwnerAddress
 From NashvilleHousing 
 
+SELECT
+PARSENAME(Replace(OwnerAddress,',','.'),3),
+PARSENAME(Replace(OwnerAddress,',','.'),2),
+PARSENAME(Replace(OwnerAddress,',','.'),1)
+From NashvilleHousing  
+
+Alter TABLE NashvilleHousing
+Add OwnerSplitAddress NVARCHAR(255)
+UPDATE NashvilleHousing  
+Set OwnerSplitAddress = PARSENAME(Replace(OwnerAddress,',','.'),3)
+
+Alter TABLE NashvilleHousing
+Add OwnerSplitCity NVARCHAR(255),
+UPDATE NashvilleHousing  
+Set OwnerSplitCity = PARSENAME(Replace(OwnerAddress,',','.'),2)
+
+Alter TABLE NashvilleHousing
+Add OwnerSplitState NVARCHAR(255),
+UPDATE NashvilleHousing  
+Set OwnerSplitState = PARSENAME(Replace(OwnerAddress,',','.'),1)
+
+SELECT *
+From NashvilleHousing  
